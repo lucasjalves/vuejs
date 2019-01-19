@@ -1,0 +1,54 @@
+<html>
+    <head>
+        <title>Aula 01</title>
+        <script src="https://unpkg.com/vue"></script>
+        <script>
+            var app;
+            var vmodel;
+            window.onload = function(){
+                app = new Vue({
+                    el: "#app",
+                    data: {
+                        status: false, 
+                        titulo: "Aula 01",
+                        linguagens: [
+                            {nome: "Teste1"},
+                            {nome: "Teste2"},
+                            {nome: "Teste3"},
+                            {nome: "Teste4"}
+                        ]
+                    }
+                });
+
+                vmodel = new Vue({
+                    el: "#vmodel",
+                    data: {
+                        nome: "",
+                        testes: []
+                    }
+                });
+            }
+
+        </script>
+    </head>
+    <body>
+    <div id="app">
+        <span v-if="status">{{titulo}}</span>
+        <ul>
+            <li v-for="item in linguagens">{{item.nome}}</li>
+        </ul>
+    </div>
+    <div id="vmodel">
+        <input type="text" v-model="nome" />
+        {{nome}}
+        <input type="checkbox" value="Teste1" v-model="testes"/> Teste1
+        <input type="checkbox" value="Teste2" v-model="testes"/> Teste2
+        <input type="checkbox" value="Teste3" v-model="testes"/> Teste3
+
+        <hr>
+        <ul>
+            <li v-for="item in testes">{{item}}</li>
+        </ul>
+    </div>
+    </body>
+</html>

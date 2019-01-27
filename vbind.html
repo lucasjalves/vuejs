@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <title>Aula 01</title>
+        <script src="https://unpkg.com/vue"></script>
+        <script>
+            var app;
+            window.onload = function(){
+                app = new Vue({
+                    el: "#app",
+                    data: {
+                        imagem: "https://pbs.twimg.com/profile_images/875996174305472512/upM71pVR_400x400.jpg"
+                    }
+                });
+                setTimeout(function(){
+                    app._data.imagem = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Unofficial_JavaScript_logo_2.svg/1200px-Unofficial_JavaScript_logo_2.svg.png";
+                },2000);
+            }
+
+        </script>
+    </head>
+    <body>
+    <div id="app">
+        <img v-bind:src="imagem" alt="">    
+        <img :src="imagem" alt="">    
+    </div>
+
+    </body>
+</html>

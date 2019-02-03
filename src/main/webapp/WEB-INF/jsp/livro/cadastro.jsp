@@ -1,18 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html>
 <head>
 <jsp:include page="../header.jsp"></jsp:include>
 <script src="https://unpkg.com/buefy/dist/components/input"></script>
+<script src="https://unpkg.com/buefy/dist/components/modal"></script>
 <script src="https://cdn.jsdelivr.net/npm/vue-the-mask@0.11.1/dist/vue-the-mask.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/v-money-plus@0.1.0/dist/v-money.min.js"></script>
+<script src="/componentes/modal.js"></script>
 <meta charset="ISO-8859-1">
 <title>Cadastro de livro</title>
 </head>
 <body>
 	<div id="app" class="container">
-
+		<money type="hidden" v-model="preco"></money>
 		<section>
 			<b-field label="Nome do livro" :type="{'is-danger': autor.length === 0}" :message="{'Campo obrigatório' : autor.length === 0}"> <b-input v-model="autor" ></b-input> </b-field>
 
@@ -77,15 +81,28 @@
         	<b-field label="Código de barras"  :type="codigoBarraLivro" :message="mensagemErroCodigoBarraLivro">
            	 	<b-input v-model="codigo_barra" v-mask="'#############'"></b-input>
         	</b-field>     
-        	  	 	
+
+        	<b-field label="Preço"  :type="precoLivro" :message="mensagemErroPrecoLivro">
+           	 	<b-input v-model="preco"></b-input>
+        	</b-field>     
+        	
+         <div>           
+             <button class="button is-success" @click="submitForm()">Cadastrar</button>
+         </div>     	      	  	 	
 		</section>
+
+
+	<b-modal :active.sync="haErro">
+            <modal-validacao :titulo="tituloModal" :mensagem="mensagemModal"></modal-validacao>
+     </b-modal>
 	</div>
 
 	<jsp:include page="../footer.jsp"></jsp:include>
 	<jsp:include page="../scripts/scriptsUtil.jsp"></jsp:include>
 <script>
 Vue.use('mask', VueTheMask);
-const app = new Vue({
+Vue.use(VMoney, {precision: 4});
+var app = new Vue({
     el: '#app',
     computed: {
     	dimensoesLivro : function(){
@@ -122,7 +139,7 @@ const app = new Vue({
     			return "is-danger";
     		}
     		return "";
-    	}
+    	},
     	mensagemErroCodigoBarraLivro: function(){
     		if(this.codigo_barra.length === 0){
     			return "Campo obrigatório";
@@ -131,7 +148,20 @@ const app = new Vue({
     			return "Código de barras (EAN-13) inválido";
     		}
     		return "";
-    		
+    	},
+    	precoLivro: function(){
+    		var precoLivroInt = parseInt(this.preco.toString().replace(/\D/g, ""));
+    		if(isNaN(precoLivroInt) || precoLivroInt === 0){
+    			return "is-danger";
+    		}
+    		return "";
+    	},
+    	mensagemErroPrecoLivro: function(){
+    		var precoLivroInt = parseInt(this.preco.toString().replace(/\D/g, ""));
+    		if(isNaN(precoLivroInt) || precoLivroInt === 0){
+    			return "Digite um valor válido";
+    		}
+    		return "";
     	}
     },
     data: {
@@ -184,7 +214,29 @@ const app = new Vue({
     	dimensoes: "",
     	peso: "",
     	codigo_barra: "",
-    	preco: ""
+    	preco: "",
+    	haErro: false,
+    	tituloModal : "",
+    	mensagemModal: ""
+    	
+    },
+    methods: {
+    	submitForm: function(){
+    		this.haErro = false;
+    		var erroNaValidacao = false;
+    		for(var chave in app._data){
+    			var valorChave = app._data[chave];
+    			if(valorChave.length === 0){
+    				erroNaValidacao = true;
+    			}
+    		}  	
+    		
+    		if(erroNaValidacao){
+    			this.tituloModal = "Erro"
+    			this.mensagemModal = "Favor, verifique os campos."
+    			this.haErro = true;
+    		}
+    	}
     }
 });
 

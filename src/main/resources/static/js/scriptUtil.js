@@ -1,4 +1,4 @@
-<script>
+
 
 function existeChaveJson(chave, json){
 	var chaves = Object.keys(json);
@@ -9,4 +9,14 @@ function existeChaveJson(chave, json){
 		return false;
 	}
 }
-</script>
+
+function validarCamposVazios(json){
+	for(var chave in json){
+		var valorChave = json[chave];
+		if(valorChave.length === 0){
+			return true;
+		}
+	}  	
+	
+	return false;
+}

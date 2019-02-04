@@ -11,12 +11,12 @@
 <script src="https://cdn.jsdelivr.net/npm/vue-the-mask@0.11.1/dist/vue-the-mask.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/v-money-plus@0.1.0/dist/v-money.min.js"></script>
 <script src="/componentes/modal.js"></script>
+<script src="/js/scriptUtil.js"></script>
 <meta charset="ISO-8859-1">
 <title>Cadastro de livro</title>
 </head>
 <body>
 	<div id="app" class="container">
-		<money type="hidden" v-model="preco"></money>
 		<section>
 			<b-field label="Nome do livro" :type="{'is-danger': autor.length === 0}" :message="{'Campo obrigatório' : autor.length === 0}"> <b-input v-model="autor" ></b-input> </b-field>
 
@@ -70,8 +70,8 @@
            	 	<b-input type="textarea" v-model="sinopse"></b-input>
         	</b-field>   
         	
-        	<b-field label="Dimensões (AA.AA x LL.LL x PP.PP)"  :type="dimensoesLivro" :message="mensagemErroDimensaoLivro">
-           	 	<b-input v-model="dimensoes" v-mask="'##.##x##.##x##.##'"></b-input>
+        	<b-field label="Dimensões (AA.AA x LL.LL x PP.PP)"  :type="dimencoesLivro" :message="mensagemErroDimensaoLivro">
+           	 	<b-input v-model="dimencoes" v-mask="'##.##x##.##x##.##'"></b-input>
         	</b-field>   
         	
         	<b-field label="Peso (gramas)"  :type="pesoLivro" :message="mensagemErroPesoLivro">
@@ -82,9 +82,14 @@
            	 	<b-input v-model="codigo_barra" v-mask="'#############'"></b-input>
         	</b-field>     
 
-        	<b-field label="Preço"  :type="precoLivro" :message="mensagemErroPrecoLivro">
-           	 	<b-input v-model="preco"></b-input>
-        	</b-field>     
+			<div class="field">
+				<label class="label">Preço</label>
+				<div class="control has-icons-right">
+					<money type="text" v-model="preco" :class="precoLivro"></money>
+					<span class="icon is-right has-text-danger"><i class="mdi mdi-alert-circle mdi-24px"></i></span>
+				</div>
+				<p v-if="mensagemErroPrecoLivro.length > 0" class="help is-danger">{{mensagemErroPrecoLivro}}</p>
+			</div>     
         	
          <div>           
              <button class="button is-success" @click="submitForm()">Cadastrar</button>
@@ -98,24 +103,23 @@
 	</div>
 
 	<jsp:include page="../footer.jsp"></jsp:include>
-	<jsp:include page="../scripts/scriptsUtil.jsp"></jsp:include>
 <script>
 Vue.use('mask', VueTheMask);
 Vue.use(VMoney, {precision: 4});
 var app = new Vue({
     el: '#app',
     computed: {
-    	dimensoesLivro : function(){
-    		if(this.dimensoes.length < 17 && this.dimensoes.length >= 0){
+    	dimencoesLivro : function(){
+    		if(this.dimencoes.length < 17 && this.dimencoes.length >= 0){
     			return "is-danger";
     		}
     		return "";
     	},
     	mensagemErroDimensaoLivro : function(){
-    		if(this.dimensoes.length < 17 && this.dimensoes.length > 0){
+    		if(this.dimencoes.length < 17 && this.dimencoes.length > 0){
     			return "Digite uma dimensão válida";
     		}   		
-    		if(this.dimensoes.length === 0){
+    		if(this.dimencoes.length === 0){
     			return "Campo obrigatório";
     		}
     		return "";
@@ -152,9 +156,9 @@ var app = new Vue({
     	precoLivro: function(){
     		var precoLivroInt = parseInt(this.preco.toString().replace(/\D/g, ""));
     		if(isNaN(precoLivroInt) || precoLivroInt === 0){
-    			return "is-danger";
+    			return "input is-danger";
     		}
-    		return "";
+    		return "input";
     	},
     	mensagemErroPrecoLivro: function(){
     		var precoLivroInt = parseInt(this.preco.toString().replace(/\D/g, ""));
@@ -211,30 +215,25 @@ var app = new Vue({
     	isbn: "",
     	numero_paginas : "",
     	sinopse: "",
-    	dimensoes: "",
+    	dimencoes: "",
     	peso: "",
     	codigo_barra: "",
     	preco: "",
     	haErro: false,
-    	tituloModal : "",
-    	mensagemModal: ""
+    	tituloModal : " ",
+    	mensagemModal: " "
     	
     },
     methods: {
     	submitForm: function(){
     		this.haErro = false;
-    		var erroNaValidacao = false;
-    		for(var chave in app._data){
-    			var valorChave = app._data[chave];
-    			if(valorChave.length === 0){
-    				erroNaValidacao = true;
-    			}
-    		}  	
-    		
+    		var erroNaValidacao = validarCamposVazios(app._data);
     		if(erroNaValidacao){
     			this.tituloModal = "Erro"
     			this.mensagemModal = "Favor, verifique os campos."
     			this.haErro = true;
+    		}else{
+    			
     		}
     	}
     }

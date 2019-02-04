@@ -5,14 +5,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-@RequestMapping("/livro")
-public class LivroController {
+@RequestMapping("/grupoPrecificacao")
+public class GrupoPrecificacaoController {
 
 	@RequestMapping("/cadastro")
-	public ModelAndView paginaCadastroLivro(ModelAndView modelView) {
-		modelView.setViewName("livro/cadastro");
+	public ModelAndView paginaCadastro(ModelAndView modelView) {
+		modelView.setViewName("grupoPrecificacao/cadastro");
 		return modelView;
 	}
-	
-
 }

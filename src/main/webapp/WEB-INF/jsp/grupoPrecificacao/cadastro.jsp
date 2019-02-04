@@ -17,11 +17,11 @@
 
 	<div id="app" class="container">
 		<section>
-			<b-field label="Nome do grupo" :type="{'is-danger': nome.length === 0}" :message="{'Campo obrigatório' : nome.length === 0}"> <b-input v-model="nome" ></b-input> </b-field>
+			<b-field label="Nome do grupo" :type="{'is-danger': nome.length === 0}" :message="{'Campo obrigatório' : nome.length === 0}"> <b-input name="nome" v-model="nome" ></b-input> </b-field>
 			<div class="field">
 				<label class="label"> Valor</label>
 				<div class="control has-icons-right">
-					<money type="text" v-model="valor" :class="valorGrupo"></money>
+					<money type="text" v-model="valor" :class="valorGrupo" name="valor"></money>
 					<span class="icon is-right has-text-danger"><i class="mdi mdi-alert-circle mdi-24px"></i></span>
 				</div>
 				<p v-if="mensagemErroValorGrupo.length > 0" class="help is-danger">{{mensagemErroValorGrupo}}</p>
@@ -72,12 +72,32 @@ const app = new Vue({
     		this.haErro = false;
     		var erroNaValidacao = validarCamposVazios(app._data);
     		if(erroNaValidacao){
-    			this.tituloModal = "Erro"
-    			this.mensagemModal = "Favor, verifique os campos."
-    			this.haErro = true;
+    			this.atualizarValores("Erro", "Verifique os campos!", true);
     		}else{
-    			
+    			var form = new FormData(document.getElementById('app'));
+    			fetch("cadastrar", {
+	    			method: "POST",
+	    			body: form
+    			})
+    			.then(function(response){
+    				if(!response.ok){
+    					this.atualizarValores("Erro no servidor", "Sistema indisponível, tente novamente mais tarde", true);
+    				}else{
+    					 response.blob().then(function(myBlob) {
+							console.log(myBlob);
+    					});
+    					 atualizarValores("Sucesso", "Cadastro realizado com sucesso!", true); 
+    				}
+    			})
+    			.catch(function(response){
+    				this.atualizarValores("Erro no servidor", "Sistema indisponível, tente novamente mais tarde", true);
+    			});
     		}			
+		},
+		atualizarValores: function(titulo, mensagem, erro){
+			this.tituloModal = titulo
+    		this.mensagemModal = mensagem
+    		this.haErro = erro;			
 		}
 	},
 	directives: {money: VMoney}

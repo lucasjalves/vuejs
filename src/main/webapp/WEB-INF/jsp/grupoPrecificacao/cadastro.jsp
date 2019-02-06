@@ -85,11 +85,14 @@ const app = new Vue({
     			})
     			.then(function(response){
     				if(!response.ok){
-    					this.atualizarValores("Erro no servidor", "Sistema indisponível, tente novamente mais tarde", true);
+    					app.atualizarValores("Erro no servidor", "Sistema indisponível, tente novamente mais tarde", true);
     				}else{
-						console.log(response.json());
-    					this.atualizarValores("Sucesso", "Cadastro realizado com sucesso!", true); 
+    					app.atualizarValores("Sucesso", "Cadastro realizado com sucesso!", true); 
+    					return response.json();
     				}
+    			})
+    			.then(function(json){
+    				console.log(json);
     			})
     		}			
 		}

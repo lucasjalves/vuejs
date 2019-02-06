@@ -16,7 +16,7 @@
 <body>
 
 	<div id="app" class="container">
-		<section>
+		<form id="form">
 			<b-field label="Nome do grupo" :type="{'is-danger': nome.length === 0}" :message="{'Campo obrigatório' : nome.length === 0}"> <b-input name="nome" v-model="nome" ></b-input> </b-field>
 			<div class="field">
 				<label class="label"> Valor</label>
@@ -25,12 +25,11 @@
 					<span class="icon is-right has-text-danger"><i class="mdi mdi-alert-circle mdi-24px"></i></span>
 				</div>
 				<p v-if="mensagemErroValorGrupo.length > 0" class="help is-danger">{{mensagemErroValorGrupo}}</p>
-			</div>  
+			</div>    	 	
+		</form>
          <div>           
              <button class="button is-success" @click="submitForm()">Cadastrar</button>
-         </div>     	      	  	 	
-		</section>
-
+         </div> 
 
 	<b-modal :active.sync="haErro">
             <modal-validacao :titulo="tituloModal" :mensagem="mensagemModal"></modal-validacao>
@@ -68,13 +67,18 @@ const app = new Vue({
     	}
 	},
 	methods: {
+		atualizarValores: function(titulo, mensagem, erro){
+			this.tituloModal = titulo
+    		this.mensagemModal = mensagem
+    		this.haErro = erro;			
+		},
 		submitForm: function(){
     		this.haErro = false;
     		var erroNaValidacao = validarCamposVazios(app._data);
     		if(erroNaValidacao){
     			this.atualizarValores("Erro", "Verifique os campos!", true);
     		}else{
-    			var form = new FormData(document.getElementById('app'));
+    			var form = new FormData(document.getElementById('form'));
     			fetch("cadastrar", {
 	    			method: "POST",
 	    			body: form
@@ -83,21 +87,11 @@ const app = new Vue({
     				if(!response.ok){
     					this.atualizarValores("Erro no servidor", "Sistema indisponível, tente novamente mais tarde", true);
     				}else{
-    					 response.blob().then(function(myBlob) {
-							console.log(myBlob);
-    					});
-    					 atualizarValores("Sucesso", "Cadastro realizado com sucesso!", true); 
+						console.log(response.json());
+    					this.atualizarValores("Sucesso", "Cadastro realizado com sucesso!", true); 
     				}
     			})
-    			.catch(function(response){
-    				this.atualizarValores("Erro no servidor", "Sistema indisponível, tente novamente mais tarde", true);
-    			});
     		}			
-		},
-		atualizarValores: function(titulo, mensagem, erro){
-			this.tituloModal = titulo
-    		this.mensagemModal = mensagem
-    		this.haErro = erro;			
 		}
 	},
 	directives: {money: VMoney}
